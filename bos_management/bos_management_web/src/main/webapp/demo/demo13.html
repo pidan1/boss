@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>⦁	layout页面布局</title>
+
+	<link rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css">
+	
+	<!-- 所有的js插件都依赖于jquery,所以导入资源的时候,必须先导入jquery -->
+	<script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+	<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+<!-- 
+	easyui中所有的控件命名规则:easyui-控件名字
+	data-options :设置控件的属性
+	title :标题
+	iconCls: 指定图标,/js/easyui/themes/icon.css文件中定义了图标的名字
+	
+ -->
+ <script type="text/javascript">
+ 	$(function(){
+ 		$('#dg').datagrid({    
+ 		    url:'dg.json',    //请求路径
+ 		    striped : true, // 是否显示斑马线
+ 		    rownumbers : true,//是否显示行号
+ 		   singleSelect : true,// 是否单选
+ 		  pagination : true,// 是否使用分页工具条
+ 		    columns:[[    
+ 		        {
+				field : 'cd',
+				title : 'cd',
+				width : 100,
+				checkbox : true
+			},{//定义表头
+				field : 'id',
+				title : '编号',
+				width : 100
+			}, {
+				field : 'name',
+				title : '名称',
+				width : 100
+			}, {
+				field : 'age',
+				title : '年龄',
+				width : 100,
+				align : 'right'
+			}   
+ 		    ]],
+ 		   toolbar: [{
+ 				iconCls: 'icon-edit',
+ 				handler: function(){alert('编辑按钮')}
+ 			},'-',{
+ 				iconCls: 'icon-help',
+ 				handler: function(){alert('帮助按钮')}
+ 			}]
+
+ 		}); 
+ 		
+ 	})
+ 
+ </script>
+
+</head>
+<body >
+
+<!-- EasyUI控件很多都可以发起网络请求,请求方式是AJAX -->
+		<table id="dg">
+		
+		
+		
+		</table>
+
+</body>
+</html>
