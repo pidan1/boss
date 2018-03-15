@@ -49,7 +49,25 @@
 				text : '修改',
 				iconCls : 'icon-edit',
 				handler : function(){
-					alert('修改');
+				
+				// 判断用户勾选的数据的条数
+				var result = $("#grid").datagrid("getSelections")
+				//alert(result); 勾选后 数据就在返回的 result中
+				if(result.length == 1){
+					//一次只能修改一条数据,所以当只勾选一个时 才允许修改
+				//打开窗口
+	//修改完 直接保存即可	,SpringDataJPA的save方法有修改功能	
+				$("#standardWindow").window("open");
+					
+					//回填数据到form 表单,记住我们的数据就在 勾选后的 返回值里接收了 
+					//result,注意这是个数组,只选一个 我们取出第一个就好result[0]
+					//找到form表单,填入数据,用load方法
+				$("#standardForm").form("load",result[0])	
+					
+				}else{
+					$.messager.alert("提示", "您必须也只能选择一条数据进行修改", "info")
+				}
+				
 				}
 			},{
 				id : 'button-delete',

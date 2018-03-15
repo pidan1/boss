@@ -23,15 +23,14 @@ public class StandardServiceImpl implements StandardService {
 	private StandardRepository standardRepository;
 	
 	@Override
-	public void save(Standard model) {
+	public void save(Standard standard) {
 		  
-		standardRepository.save(model);
+		standardRepository.save(standard);
 	}
 
 	@Override
 	public Page<Standard> findAll(Pageable pageable) {
 		  
-		// TODO Auto-generated method stub  
 		return standardRepository.findAll(pageable);
 	}
 

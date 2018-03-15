@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
@@ -24,6 +25,7 @@ import com.itheima.bos.service.base.StandardService;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**  
@@ -79,7 +81,6 @@ public class StandardAction extends ActionSupport implements ModelDriven<Standar
 		 // 所以要-1
 		Pageable pageable =new PageRequest(page-1, rows);
 		Page<Standard> page = standardService.findAll(pageable);
-		
 		//拿到数据后,我们把需要的数据 从对象中拿出来,不需要的数据 不拿,不要把无效数据返回给页面
 		// 总数据条数
 		long total = page.getTotalElements();
@@ -96,6 +97,10 @@ public class StandardAction extends ActionSupport implements ModelDriven<Standar
 		// 把对象转化为json字符串
 		String json = JSONObject.fromObject(map).toString();
 		
+		//ServletContext servletContext = ServletActionContext.getServletContext();
+		//servletContext.getRealPath("");
+		//servletContext.getMimeType("");
+		
 		HttpServletResponse response = ServletActionContext.getResponse();
 		response.setContentType("application/json;charset=UTF-8");
 		response.getWriter().write(json);
@@ -103,6 +108,25 @@ public class StandardAction extends ActionSupport implements ModelDriven<Standar
 		return NONE;
 	}
 	
+	//查询所有的收派标准,把数据转成json格式,传给快递员保存页面的下拉框
+	@Action(value="standard_findAll")
+	public String findAll() throws IOException{
+		
+		Page<Standard> page = standardService.findAll(null);
+		
+		//获取页面所需的数据
+		List<Standard> list = page.getContent();
+		
+		//把数据转换成json,并写出至页面
+		String json = JSONArray.fromObject(list).toString();
+		
+		HttpServletResponse response = ServletActionContext.getResponse();
+		response.setContentType("application/json;charset=UTF-8");
+		response.getWriter().write(json);
+		
+		
+		return NONE;
+	}
 	
 }
   

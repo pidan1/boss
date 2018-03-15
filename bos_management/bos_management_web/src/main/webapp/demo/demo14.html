@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>⦁	layout页面布局</title>
+
+	<link rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css">
+	
+	<!-- 所有的js插件都依赖于jquery,所以导入资源的时候,必须先导入jquery -->
+	<script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+	<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+<!-- 
+	easyui中所有的控件命名规则:easyui-控件名字
+	data-options :设置控件的属性
+	title :标题
+	iconCls: 指定图标,/js/easyui/themes/icon.css文件中定义了图标的名字
+	
+ -->
+
+</head>
+<body >
+		
+		<select class="easyui-combobox">
+		<option value="001">上海</option>
+		<option value="002">北京</option>
+		<option value="003">深圳</option>
+
+	</select>
+	
+	<!-- 
+	valueField:加载的json文件中对象的key,传递给服务器的值就包含在这个key对应的值里面
+	,textField:加载的json文件中 对象的key,这个key对应的值是显示在页面上展示出来的
+	 -->
+	
+	<input id="cc" class="easyui-combobox"  
+    data-options="valueField:'id',textField:'name',url:'cb.json'" />
+
+</body>
+</html>

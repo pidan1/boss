@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -52,6 +53,10 @@ public class Courier {
     @JoinColumn(name = "C_TAKETIME_ID")
     private TakeTime takeTime;
 
+    //在JPA中 只有集合属性会发生懒加载
+    //增加transient 关键字，但是会导致所有调用都无法生成该字段的值
+    //增加 fetch=FetchType.EAGER 属性 表示立刻将该字段的值加载出来
+    //(mappedBy = "couriers",fetch=FetchType.EAGER)
     @ManyToMany(mappedBy = "couriers")
     private Set<FixedArea> fixedAreas = new HashSet<FixedArea>();
 

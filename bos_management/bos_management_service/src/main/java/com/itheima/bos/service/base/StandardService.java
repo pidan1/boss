@@ -15,7 +15,7 @@ import com.itheima.bos.domain.base.Standard;
 
 public interface StandardService {
 
-	void save(Standard model);
+	void save(Standard standard);
 
 	Page<Standard> findAll(Pageable pageable);
 	
