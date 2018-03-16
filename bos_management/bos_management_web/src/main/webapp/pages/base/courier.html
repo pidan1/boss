@@ -229,9 +229,9 @@
 		function doSearch() {
 			//把form表单中input节点的name的值和用户输入的内容，拼接成json字符串
 			var result = $("#searchForm").serializeJson();
-			//通过调用这个方法从服务器加载新数据。，需要增加的参数 通过json 形式体现
-			//让Datagrid重新发起请求，并把用户输入的查询条件传递给后台
 			
+			//让Datagrid重新发起请求，并把用户输入的查询条件传递给后台
+			//通过调用这个方法从服务器加载新数据。，需要增加的参数 通过json 形式体现
 			$('#grid').datagrid('load',result);
 
 		}

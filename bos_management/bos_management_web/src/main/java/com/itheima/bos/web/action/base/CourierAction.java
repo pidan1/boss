@@ -84,7 +84,7 @@ public class CourierAction extends ActionSupport implements ModelDriven<Courier>
 		Specification<Courier> specification =new Specification<Courier>() {
 
 			/**
-			 * 参数1：root ：跟对象，简单的理解为泛型对象，
+			 * 参数1：root ：根对象，简单的理解为泛型对象，
 			 *   参数2 ： cb :构建查询条件的对象
 			 */
 			@Override

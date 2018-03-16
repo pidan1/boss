@@ -22,6 +22,7 @@ import org.springframework.stereotype.Controller;
 
 import com.itheima.bos.domain.base.Standard;
 import com.itheima.bos.service.base.StandardService;
+import com.itheima.bos.web.action.CommomAction;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
 
@@ -38,15 +39,16 @@ import net.sf.json.JSONObject;
 @ParentPackage("struts-default")// 等价于struts.xml文件中package节点extends属性
 @Controller
 @Scope("prototype")
-public class StandardAction extends ActionSupport implements ModelDriven<Standard>{
+public class StandardAction extends CommomAction<Standard>{
 
-	private Standard model = new Standard();
 	
-	@Override
-	public Standard getModel() {
+	
+	public StandardAction() {
 		  
-		return model;
+		super(Standard.class);  
+		
 	}
+
 	@Autowired
 	private StandardService standardService;
 	
@@ -58,19 +60,11 @@ public class StandardAction extends ActionSupport implements ModelDriven<Standar
 	@Action(value="standardAction_save",results={@Result(name="success",
 			location="/pages/base/standard.html",type="redirect")})
 	public String save(){
-		standardService.save(model);
+		standardService.save(getModel());
 		return SUCCESS;
 	}
 	
-	// 使用属性驱动获取数据,這些數據是easyui帶過來的
-	private int page;// 第几页
-	private int rows;// 每一页显示多少条数据
-	public void setPage(int page) {
-		this.page = page;
-	}
-	public void setRows(int rows) {
-		this.rows = rows;
-	}
+	
 
 	// AJAX请求不需要跳转页面
 	@Action(value="standardAction_pageQuery")
@@ -83,27 +77,7 @@ public class StandardAction extends ActionSupport implements ModelDriven<Standar
 		Page<Standard> page = standardService.findAll(pageable);
 		//拿到数据后,我们把需要的数据 从对象中拿出来,不需要的数据 不拿,不要把无效数据返回给页面
 		// 总数据条数
-		long total = page.getTotalElements();
-		// 当前页要实现的内容
-		List<Standard> list = page.getContent();
-		//封装数据
-		Map<String, Object> map =new HashMap<>();
-		map.put("total", total);
-		map.put("rows", list);
-		
-		//把数据转成json 写出到页面
-		// JSONObject : 封装对象或map集合
-		// JSONArray : 数组,list集合
-		// 把对象转化为json字符串
-		String json = JSONObject.fromObject(map).toString();
-		
-		//ServletContext servletContext = ServletActionContext.getServletContext();
-		//servletContext.getRealPath("");
-		//servletContext.getMimeType("");
-		
-		HttpServletResponse response = ServletActionContext.getResponse();
-		response.setContentType("application/json;charset=UTF-8");
-		response.getWriter().write(json);
+		page2json(page, null);
 		
 		return NONE;
 	}

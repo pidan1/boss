@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>⦁	layout页面布局</title>
+
+	<link rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css">
+	
+	<!-- 所有的js插件都依赖于jquery,所以导入资源的时候,必须先导入jquery -->
+	<script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+	<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../js/jquery.ocupload-1.1.2.js"></script>
+
+<script type="text/javascript">
+//1.导入js文件
+// 2.定义一个按钮
+// 3.在入口函数中初始化控件
+$(function(){
+	$("#btn").upload({
+		 name:"areaFile",//默认未  file，写出来 代表自定义了名字
+		action:"../../upload.action"
+	})
+	
+})
+
+</script>
+</head>
+<body >
+		<iframe name="xxx" style="display: none"></iframe>
+		
+		<form target="xxx" action="http://www.baidu.com" method="post" 
+					enctype="multipart/form-data">
+					
+			<input name="aaa" type="file"><br/>
+			<input type="submit" value="上传">
+		
+		</form>
+
+
+<input id="btn" type="button"  value="oc上传">
+
+
+
+</body>
+</html>
