@@ -36,6 +36,12 @@ public class Area {
 
     @OneToMany(mappedBy = "area")
     private Set<SubArea> subareas = new HashSet<SubArea>();
+    
+    //json串在序列化 一个实体类的时候,其实就是 调用这个实体类的 get方法
+    
+    public String getName() {
+    	return province+city+district;
+    }
 
     public Long getId() {
         return id;
