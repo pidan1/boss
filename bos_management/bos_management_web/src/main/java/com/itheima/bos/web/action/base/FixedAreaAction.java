@@ -48,7 +48,7 @@ public class FixedAreaAction extends CommomAction<FixedArea> {
 	@Action(value="fixedAreaAction_save",results={@Result(name="success",
 			location="/pages/base/fixed_area.html",type="redirect")})
 	public String save(){
-		System.out.println(getModel().getCompany()+"-----");
+		System.out.println(getModel().getCompany()+"----------------");
 		fixedAreaService.save(getModel());
 		return SUCCESS;
 	}
@@ -74,6 +74,7 @@ public class FixedAreaAction extends CommomAction<FixedArea> {
 			return NONE;
 		}
 	
+		
 		// AJAX请求不需要跳转页面
 		@Action(value="fixedAreaAction_findCustomersUnAssociated")
 		public String findCustomersUnAssociated() throws IOException{
@@ -90,6 +91,42 @@ public class FixedAreaAction extends CommomAction<FixedArea> {
 		}
 	
 	
+		// AJAX请求不需要跳转页面
+		@Action(value="fixedAreaAction_findCustomersAssociated2FixedArea")
+		public String findCustomersAssociated2FixedArea() throws IOException{
+			
+			List<Customer> list = (List<Customer>) WebClient
+					.create("http://localhost:8180/crm/webService/customerService/findCustomersAssociated2FixedArea")
+					.type(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON)
+					.query("fixedAreaId", getModel().getId())
+					.getCollection(Customer.class);
+			
+			list2json(list, null);
+			
+			return NONE;
+		}
+		
+		//使用 属性驱动 获取所选中的需要关联的客户的id数组： customerIds 
+		private Long[] customerIds;
+		public void setCustomerIds(Long[] customerIds) {
+			this.customerIds = customerIds;
+		}
+		
+		// 向crm系统 发起请求，关联客户
+		@Action(value="fixedAreaAction_assignCustomers2FixedArea",results={@Result(name="success",
+				location="/pages/base/fixed_area.html",type="redirect")})
+		public String assignCustomers2FixedArea() throws IOException{
+			
+			 WebClient
+				.create("http://localhost:8180/crm/webService/customerService/assignCustomers2FixedArea")
+				.type(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.query("fixedAreaId", getModel().getId())
+				.query("customerIds", customerIds)
+				.put(null);
+			return SUCCESS;
+		}
 	
 	
 

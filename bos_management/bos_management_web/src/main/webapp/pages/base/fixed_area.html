@@ -38,14 +38,42 @@
 			function doAssociationsCustomer(){
 				var rows = $("#grid").datagrid('getSelections');
 				if (rows.length ==1) {
-					
+					//当选择一个定区时,允许弹出 关联客户的窗口
 				$('#customerWindow').window('open');
+				//发送异步请求,获取 未关联定区的客户,和已关联定区的客户,并显示到 相应区域
+				
+				//清空数据,避免重复添加
+				//$("#noassociationSelect").html(""); //方式一
+				$("#noassociationSelect").empty();  //方式二
+				$("#associationSelect").empty();  //方式二
 				
 				// 查询未关联的客户(发送请求获取数据)
 				$.post("../../fixedAreaAction_findCustomersUnAssociated.action",
 						function(data){
-					
-					$("#noassociationSelect").append("")
+					//从回调函数 中取出需要的 数据 显示到相应区域
+					for (var i = 0; i < data.length; i++) {
+					var id = data[i].id;
+					var username = data[i].username;
+					var telephone = data[i].telephone;
+						
+					$("#noassociationSelect").append("<option value='"+id+"'>"+username+"["+telephone+"]</option>");
+					}
+				})
+				
+				//获取当前被选中的定区的id
+				var id =rows[0].id;
+				
+				// 查询已关联的客户(发送请求获取数据)
+				$.post("../../fixedAreaAction_findCustomersAssociated2FixedArea.action","id="+id,
+						function(data){
+					//从回调函数 中取出需要的 数据 显示到相应区域
+					for (var i = 0; i < data.length; i++) {
+					var id = data[i].id;
+					var username = data[i].username;
+					var telephone = data[i].telephone;
+						
+					$("#associationSelect").append("<option value='"+id+"'>"+username+"["+telephone+"]</option>");
+					}
 				})
 				
 				
@@ -399,24 +427,51 @@
 						<tr>
 							<td>
 								<input type="hidden" name="id" id="customerFixedAreaId" />
-								<select id="noassociationSelect" multiple="multiple" size="10"></select>
+								
+								<!-- size :指定一次显示多少条数据    multiple: 可以选择多条数据 -->
+								<select id="noassociationSelect" multiple="multiple" size="10">
+								</select>
 							</td>
 							<td>
-								<input type="button" value="》》" id="toRight">
+								<input type="button" value="》》" id="toRight" onclick="moveCustomer2Right()">
 								<br/>
-								<input type="button" value="《《" id="toLeft">
+								<input type="button" value="《《" id="toLeft" onclick="moveCustomer2Left()">
 							</td>
 							<td>
 								<select id="associationSelect" name="customerIds" multiple="multiple" size="10"></select>
 							</td>
 						</tr>
 						<tr>
-							<td colspan="3"><a id="associationBtn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'">关联客户</a> </td>
+							<td colspan="3"><a id="associationBtn" href="#" onclick="associateCustomer2FixedArea()" class="easyui-linkbutton" data-options="iconCls:'icon-save'">关联客户</a> </td>
 						</tr>
 					</table>
 				</form>
 			</div>
 		</div>
+		<script type="text/javascript">
+			function moveCustomer2Right(){
+				$("#associationSelect").append($("#noassociationSelect option:selected"))
+			}
+			function moveCustomer2Left(){
+				$("#noassociationSelect").append($("#associationSelect option:selected"))
+			}
+			// 提交关联客户的表单
+			//我们要提交什么，1，定区的id，2，所选择需要关联的 客户的id
+			function associateCustomer2FixedArea(){
+				//给定区id赋值
+			var rows = $("#grid").datagrid("getSelections");
+				//rows[0].id
+				$("#customerFixedAreaId").val(rows[0].id);
+				
+				//选中右侧下拉框所有数据
+				//根据id找到下拉框，并找到 option，给这个属性 赋值 让它的属性 selected 的值为 selected
+				$("#associationSelect option").attr("selected","selected");
+				
+				$("#customerForm").submit();
+			}
+			
+		</script>
+		
 		
 		<!-- 关联快递员窗口 -->
 		<div class="easyui-window" title="关联快递员窗口" id="courierWindow" modal="true"
@@ -433,7 +488,7 @@
 							<td>
 								<!-- 存放定区编号 -->
 								<input type="hidden" name="id" id="courierFixedAreaId" />
-								<input data-options="ditable:false, url:'../../courierAction_listajax.action',valueField:'id',textField:'name'"
+								<input data-options="editable:false, url:'',valueField:'id',textField:'name'"
 									 type="text" name="courierId" class="easyui-combobox" required="true" />
 							</td>
 						</tr>
