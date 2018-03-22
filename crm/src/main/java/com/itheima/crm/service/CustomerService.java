@@ -50,5 +50,11 @@ public interface CustomerService {
 	@Path("/save")
 	void save(Customer customer);
 	
+	//激活用户
+	@PUT
+	@Path("/active")
+	void active(@QueryParam("telephone") String telephone);
+	
+	
 }
   
