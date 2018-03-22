@@ -30,6 +30,7 @@ import org.springframework.stereotype.Controller;
 import com.itheima.bos.domain.base.Courier;
 import com.itheima.bos.domain.base.Standard;
 import com.itheima.bos.service.base.CourierService;
+import com.itheima.bos.web.action.CommomAction;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
 
@@ -46,33 +47,20 @@ import net.sf.json.JsonConfig;
 @ParentPackage("struts-default")
 @Controller
 @Scope("prototype")
-public class CourierAction extends ActionSupport implements ModelDriven<Courier>{
+public class CourierAction extends CommomAction<Courier> {
 	
 
-	private Courier model = new Courier();
+	public CourierAction() {
+		super(Courier.class);  
+	}
 	@Autowired
 	private CourierService courierService;
-	
-	@Override
-	public Courier getModel() {
-		  
-		return model;
-	}
 	
 	@Action(value="courierAction_save",
 			results={@Result(name="success",location="/pages/base/courier.html",type="redirect")})
 	public String save() {
-		courierService.save(model);
+		courierService.save(getModel());
 		return SUCCESS;
-	}
-	
-	private int page;// 第几页
-	private int rows;//每页显示条数
-	public void setPage(int page) {
-		this.page = page;
-	}
-	public void setRows(int rows) {
-		this.rows = rows;
 	}
 	
 	//分页查询的方法
@@ -92,10 +80,10 @@ public class CourierAction extends ActionSupport implements ModelDriven<Courier>
 					CriteriaQuery<?> query, CriteriaBuilder cb) {
 				  
 				//页面传递过来的数据，都在模型了，我们取出来，判空 并构建查询条件
-				String courierNum = model.getCourierNum();//工号
-				String company = model.getCompany();//公司
-				String type = model.getType();//类型
-				Standard standard = model.getStandard();
+				String courierNum = getModel().getCourierNum();//工号
+				String company = getModel().getCompany();//公司
+				String type = getModel().getType();//类型
+				Standard standard = getModel().getStandard();
 				
 				List<Predicate> list=new ArrayList<>();
 				
@@ -148,25 +136,12 @@ public class CourierAction extends ActionSupport implements ModelDriven<Courier>
 		Pageable pageable = new PageRequest(page-1, rows);
 		Page<Courier> page = courierService.findAll(specification,pageable);
 		
-		//拿到我们想要的数据，不想要的数据 不拿
-		long total = page.getTotalElements();
-		List<Courier> list = page.getContent();
-		
-		Map<String, Object> map = new HashMap<>();
-		map.put("total", total);
-		map.put("rows", list);
-		
 		//忽略不需要 返回的数据
 		JsonConfig jsonConfig = new JsonConfig();
 		//fixedAreas
 		jsonConfig.setExcludes(new String[]{"fixedAreas","takeTime"});
 		
-		String json = JSONObject.fromObject(map, jsonConfig).toString();
-		// 在实际开发的时候,为了提高服务器的性能,把前台页面不需要的数据都应该忽略掉
-		
-		HttpServletResponse response = ServletActionContext.getResponse();
-		response.setContentType("application/json;charset=UTF-8");
-		response.getWriter().write(json);
+		page2json(page, jsonConfig);
 		
 		return NONE;
 	}
@@ -182,6 +157,40 @@ public class CourierAction extends ActionSupport implements ModelDriven<Courier>
 	public String batchDel(){
 		courierService.batchDel(ids);
 		return SUCCESS;
+	}
+	
+	@Action("courierAction_listajax")
+	public String listajax() throws IOException{
+		//查询所有在职的快递员
+		Specification<Courier> specification = new Specification<Courier>() {
+			@Override
+			public Predicate toPredicate(Root<Courier> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				  Predicate predicate = cb.isNull(root.get("deltag").as(Character.class));
+				return predicate;
+			}
+		};
+		Page<Courier> page = courierService.findAll(specification, null);
+		List<Courier> list = page.getContent();
+		
+		//忽略不需要 返回的数据
+		JsonConfig jsonConfig = new JsonConfig();
+		jsonConfig.setExcludes(new String[]{"fixedAreas","takeTime"});
+		
+		list2json(list, jsonConfig);
+		return NONE;
+	}
+	
+	@Action("courierAction_listajax2")
+	public String listajax2() throws IOException{
+		//查询所有在职的快递员
+		List<Courier> list = courierService.findAvaible();
+		
+		//忽略不需要 返回的数据
+		JsonConfig jsonConfig = new JsonConfig();
+		jsonConfig.setExcludes(new String[]{"fixedAreas","takeTime"});
+		
+		list2json(list, jsonConfig);
+		return NONE;
 	}
 	
 	

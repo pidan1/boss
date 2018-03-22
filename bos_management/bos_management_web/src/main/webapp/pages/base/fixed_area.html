@@ -488,30 +488,46 @@
 							<td>
 								<!-- 存放定区编号 -->
 								<input type="hidden" name="id" id="courierFixedAreaId" />
-								<input data-options="editable:false, url:'',valueField:'id',textField:'name'"
+								
+								<input data-options="editable:false, url:'../../courierAction_listajax.action',valueField:'id',textField:'name'"
 									 type="text" name="courierId" class="easyui-combobox" required="true" />
 							</td>
 						</tr>
 						<tr>
 							<td>选择收派时间</td>
 							<td>
-								<select required="true" class="easyui-combobox" name="takeTimeId">
-									<option>请选择</option>
-									<option value="1">北京早班</option>
-									<option value="2">北京晚班</option>
-								</select>
-								<!-- <input type="text" name="takeTimeId" class="easyui-combobox" required="true" /> -->
+								
+								<input data-options="editable:false, url:'../../takeTimeAction_listajax.action',valueField:'id',textField:'name'"
+									 type="text" name="takeTimeId" class="easyui-combobox" required="true" />
+								
 							</td>
 						</tr>
 						<tr>
 							<td colspan="3">
-								<a id="associationCourierBtn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'">关联快递员</a>
+								<a id="associationCourierBtn" href="#" onclick="associateCourier()" class="easyui-linkbutton" data-options="iconCls:'icon-save'">关联快递员</a>
 							 </td>
 						</tr>
 					</table>
 				</form>
 			</div>
 		</div>
+		<script type="text/javascript">
+		function associateCourier(){
+			//校验提交的表单
+			var flag = $("#courierForm").form("validate");
+			if (flag){
+				//定区关联快递员
+				//给定区的id赋值,拿到定区id ,
+			var rows = $("#grid").datagrid("getSelections");
+				$("#courierFixedAreaId").val(rows[0].id);
+				//提交表单
+				$("#courierForm").submit();
+			}
+		}
+		
+		</script>
+		
+		
 	</body>
 
 </html>

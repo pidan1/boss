@@ -63,5 +63,12 @@ public class CustomerServiceImpl implements CustomerService {
 		}
 	}
 
+	//用于注册 保存用户
+	@Override
+	public void save(Customer customer) {
+		  
+		customerRepository.save(customer);		
+	}
+
 }
   

@@ -127,8 +127,29 @@ public class FixedAreaAction extends CommomAction<FixedArea> {
 				.put(null);
 			return SUCCESS;
 		}
+		
+		
+		private Long courierId;
+		private Long takeTimeId;
+		public void setCourierId(Long courierId) {
+			this.courierId = courierId;
+		}
+		public void setTakeTimeId(Long takeTimeId) {
+			this.takeTimeId = takeTimeId;
+		}
 	
-	
+	//定区关联快递员  fixedAreaAction_associationCourierToFixedArea
+		@Action(value="fixedAreaAction_associationCourierToFixedArea",results={@Result(name="success",
+				location="/pages/base/fixed_area.html",type="redirect")})
+		public String associationCourierToFixedArea(){
+			
+			fixedAreaService.associationCourierToFixedArea(getModel().getId(),courierId,takeTimeId);
+			
+			
+			
+			return SUCCESS;
+		}
+		
 
 }
   
