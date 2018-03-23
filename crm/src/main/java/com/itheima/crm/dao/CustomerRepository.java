@@ -34,6 +34,13 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>{
 	void active(String telephone);
 
 	
+	//判断是否激活,用手机号码 查找对象
+	Customer findByTelephone(String telephone);
+
+	//用于登录
+	Customer findByTelephoneAndPassword(String telephone, String password);
+
+	
 	
 }
   

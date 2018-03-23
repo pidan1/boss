@@ -44,7 +44,7 @@ public class CustomerAction extends ActionSupport implements ModelDriven<Custome
 	
 	//customerAction_sendSMS   该方法 生成用于向用户输入的手机号发送验证码
 	@Action(value="customerAction_sendSMS")
-	public String sendSMS(){
+	public String sendSMS(){//此方法 用于 给正在注册的用户 发送手机验证码
 		
 		//生成随机验证码
 		String code = RandomStringUtils.randomNumeric(6);
@@ -77,7 +77,7 @@ public class CustomerAction extends ActionSupport implements ModelDriven<Custome
 			location="/signup-success.html",type="redirect"),
 					@Result(name="error",
 			location="/signup-fail.html",type="redirect")})
-	public String regist(){
+	public String regist(){  //此方法 用于用户注册,并在注册成功后 给用户发送激活邮件
 		
 		//1，校验验证码 
 		//拿出后台的验证码,前台的验证码需要通过属性驱动 获得
@@ -119,7 +119,7 @@ public class CustomerAction extends ActionSupport implements ModelDriven<Custome
 			location="/login.html",type="redirect"),
 					@Result(name="error",
 			location="/error.html",type="redirect")})
-	public String active(){
+	public String active(){  //此方法 用于用户账号激活
 		
 		//从redis 取出激活码进行比对
 		String serverCode = redisTemplate.opsForValue().get(model.getTelephone());
@@ -133,6 +133,63 @@ public class CustomerAction extends ActionSupport implements ModelDriven<Custome
 			.query("telephone", model.getTelephone())
 			.put(null);
 			return SUCCESS;
+		}
+		
+		return ERROR;
+	}
+	//写方法 用于 用户登录
+	//登录的逻辑1, 校验验证码, 2,校验用户是否激活  , 3,然后 校验 账号 密码
+	//页面提交过来的验证码 mane 属性是 checkcode 跟注册的时候提交的属性名是一样的,所以 可以用之前的属性驱动
+	
+	@Action(value="customerAction_login",
+			results={@Result(name="success",
+			location="/index.html",type="redirect"),
+					@Result(name="error",
+			location="/login.html",type="redirect"),
+					@Result(name="unactived",
+			location="/login.html",type="redirect")})
+	public String login(){
+		//System.out.println("开始登录-------");
+		//拿出生成后存在session中的验证码 validateCode
+		String serverCode = (String) ServletActionContext.getRequest().getSession().getAttribute("validateCode");
+		//校验验证码
+		if (StringUtils.isNotEmpty(serverCode)&& StringUtils.isNotEmpty(checkcode)
+				&&serverCode.equals(checkcode)) {
+			//校验是否激活
+			Customer customer = WebClient.create("http://localhost:8180/crm/webService/customerService/isActived")
+			.type(MediaType.APPLICATION_JSON)
+			.accept(MediaType.APPLICATION_JSON)
+			.query("telephone", model.getTelephone())
+			.get(Customer.class);
+			//System.out.println("校验激活-------"+customer);
+			if (customer!=null && customer.getType()!=null) {
+				if (customer.getType()==1) {
+					//激活了
+					//校验账号密码
+			Customer c = WebClient.create("http://localhost:8180/crm/webService/customerService/login")
+			.type(MediaType.APPLICATION_JSON)
+			.accept(MediaType.APPLICATION_JSON)
+			.query("telephone", model.getTelephone())
+			.query("password", model.getPassword())
+			.get(Customer.class);	
+			//System.out.println("校验账号-------"+c);
+			if (c!=null) {
+				//登录成功
+				ServletActionContext.getRequest().getSession().setAttribute("user", c);
+				return SUCCESS;
+				
+			}else {
+				//登录失败
+				return ERROR;
+			}
+			
+			
+				}else {
+					//已注册,但您还未激活
+					return "unactived";
+				}
+				
+			}
 		}
 		
 		return ERROR;

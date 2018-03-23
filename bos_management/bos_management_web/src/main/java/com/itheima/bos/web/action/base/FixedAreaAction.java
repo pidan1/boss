@@ -74,7 +74,7 @@ public class FixedAreaAction extends CommomAction<FixedArea> {
 			return NONE;
 		}
 	
-		
+		//查询未关联的客户信息
 		// AJAX请求不需要跳转页面
 		@Action(value="fixedAreaAction_findCustomersUnAssociated")
 		public String findCustomersUnAssociated() throws IOException{
@@ -90,7 +90,7 @@ public class FixedAreaAction extends CommomAction<FixedArea> {
 			return NONE;
 		}
 	
-	
+		//查询已关联的客户的信息
 		// AJAX请求不需要跳转页面
 		@Action(value="fixedAreaAction_findCustomersAssociated2FixedArea")
 		public String findCustomersAssociated2FixedArea() throws IOException{
@@ -144,12 +144,24 @@ public class FixedAreaAction extends CommomAction<FixedArea> {
 		public String associationCourierToFixedArea(){
 			
 			fixedAreaService.associationCourierToFixedArea(getModel().getId(),courierId,takeTimeId);
-			
-			
-			
 			return SUCCESS;
 		}
 		
-
+		//subAreaIds
+		//使用属性驱动 获取选取的分区的id
+		private Long[] subAreaIds;
+		public void setSubAreaIds(Long[] subAreaIds) {
+			this.subAreaIds = subAreaIds;
+		}
+		
+		//定区关联分区  fixedAreaAction_assignSubAreas2FixedArea
+		@Action(value="fixedAreaAction_assignSubAreas2FixedArea",results={@Result(name="success",
+				location="/pages/base/fixed_area.html",type="redirect")})
+		public String assignSubAreas2FixedArea(){
+			
+			fixedAreaService.assignSubAreas2FixedArea(getModel().getId(),subAreaIds);
+			return SUCCESS;
+		}
+	
 }
   

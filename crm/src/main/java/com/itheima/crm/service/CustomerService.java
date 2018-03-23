@@ -55,6 +55,14 @@ public interface CustomerService {
 	@Path("/active")
 	void active(@QueryParam("telephone") String telephone);
 	
+	//校验是否激活
+	@GET
+	@Path("/isActived")
+	Customer isActived(@QueryParam("telephone") String telephone);
 	
+	//登录,校验账号 和密码
+	@GET
+	@Path("/login")
+	Customer login(@QueryParam("telephone") String telephone ,@QueryParam("password") String password);
 }
   

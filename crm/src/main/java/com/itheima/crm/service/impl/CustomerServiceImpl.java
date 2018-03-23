@@ -76,5 +76,17 @@ public class CustomerServiceImpl implements CustomerService {
 		customerRepository.active(telephone);
 	}
 
+	@Override
+	public Customer isActived(String telephone) {
+		  
+		return customerRepository.findByTelephone(telephone);
+	}
+
+	@Override
+	public Customer login(String telephone, String password) {
+		  
+		return customerRepository.findByTelephoneAndPassword(telephone,password);
+	}
+
 }
   
