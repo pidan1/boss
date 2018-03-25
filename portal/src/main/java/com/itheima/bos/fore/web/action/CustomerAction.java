@@ -2,6 +2,10 @@ package com.itheima.bos.fore.web.action;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.jms.JMSException;
+import javax.jms.MapMessage;
+import javax.jms.Message;
+import javax.jms.Session;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -15,6 +19,8 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Controller;
 
 import com.aliyuncs.exceptions.ClientException;
@@ -41,24 +47,33 @@ public class CustomerAction extends ActionSupport implements ModelDriven<Custome
 		
 		return model;
 	}
+	//注入模板
+	@Autowired
+	private JmsTemplate JmsTemplate;
 	
 	//customerAction_sendSMS   该方法 生成用于向用户输入的手机号发送验证码
 	@Action(value="customerAction_sendSMS")
 	public String sendSMS(){//此方法 用于 给正在注册的用户 发送手机验证码
 		
 		//生成随机验证码
-		String code = RandomStringUtils.randomNumeric(6);
+		final String code = RandomStringUtils.randomNumeric(6);
 		System.out.println("code----"+code);
 		//存到session中
 		ServletActionContext.getRequest().getSession().setAttribute("code", code);
 		
-		//发送短信
-		try {
-			SmsUtils.sendSms(model.getTelephone(), code);
-		} catch (ClientException e) {
+		//手机号，验证码
+		JmsTemplate.send("sms", new MessageCreator() {
 			
-			e.printStackTrace();  
-		}
+			@Override
+			public Message createMessage(Session session) throws JMSException {
+				MapMessage message = session.createMapMessage();
+				message.setString("tel", getModel().getTelephone());
+				message.setString("code",code);
+				
+				return message;
+			}
+		});
+		
 		
 		return NONE;
 	}
