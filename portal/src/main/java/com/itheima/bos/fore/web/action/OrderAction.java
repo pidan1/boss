@@ -5,7 +5,11 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 import com.itheima.bos.domain.base.Area;
 import com.itheima.bos.domain.take_delivery.Order;
@@ -17,6 +21,10 @@ import com.opensymphony.xwork2.ModelDriven;
  * Function:  <br/>  
  * Date:     2018年3月24日 下午2:52:39 <br/>       
  */
+@Namespace("/")
+@ParentPackage("struts-default")
+@Controller
+@Scope("prototype")
 public class OrderAction extends ActionSupport implements ModelDriven<Order>{
 
 	private Order model=new Order();
@@ -84,8 +92,6 @@ public class OrderAction extends ActionSupport implements ModelDriven<Order>{
 		.accept(MediaType.APPLICATION_JSON)
 		.type(MediaType.APPLICATION_JSON)
 		.post(model);
-		
-		
 		
 		return SUCCESS;
 	}

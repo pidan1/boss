@@ -16,9 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.itheima.bos.dao.base.AreaRepository;
 import com.itheima.bos.dao.base.FixedAreaRepository;
 import com.itheima.bos.dao.take_delivery.OrderRepository;
+import com.itheima.bos.dao.take_delivery.WorkBillRepository;
 import com.itheima.bos.domain.base.Area;
 import com.itheima.bos.domain.base.Courier;
 import com.itheima.bos.domain.base.FixedArea;
+import com.itheima.bos.domain.base.SubArea;
 import com.itheima.bos.domain.take_delivery.Order;
 import com.itheima.bos.domain.take_delivery.WorkBill;
 import com.itheima.bos.service.take_delivery.OrderService;
@@ -39,6 +41,8 @@ public class OrderServiceImpl implements OrderService {
 	private AreaRepository areaRepository;
 	@Autowired
 	private FixedAreaRepository fixedAreaRepository;
+	@Autowired
+	private WorkBillRepository workBillRepository;
 	
 	@Override
 	public void saveOrder(Order order) {
@@ -73,6 +77,7 @@ public class OrderServiceImpl implements OrderService {
 		orderRepository.save(order);
 		
 		//自动分单
+		//取出发件人填写的详细地址
 		String sendAddress = order.getSendAddress();
 		
 		if (StringUtils.isNotEmpty(sendAddress)) {//客户填写了地址
@@ -110,23 +115,71 @@ public class OrderServiceImpl implements OrderService {
 						workBill.setSmsNumber("111");
 						workBill.setType("新");
 						
-						
+						//保存工单
+						workBillRepository.save(workBill);
+						//发送信息 推送给快递员
+						//分单匹配完毕,中断代码的执行
+						order.setOrderType("自动分单");
+						return;
 					}
 				}
+			}else {
+				//不能根据下单的详细地址 匹配到定区
+				//跟据省市区 查找到分区
 				
 				
+				Area sendArea2 = order.getSendArea();//获取寄件人选择的省市区
+				if (sendArea2!=null) {
+					Set<SubArea> subareas = sendArea2.getSubareas();//找出省市区下的全部分区
+					for (SubArea subArea : subareas) {//遍历 出每一个分区
+						String keyWords = subArea.getKeyWords();          //取出分区的关键字
+						String assistKeyWords = subArea.getAssistKeyWords();//取出分区的辅助关键字
+						if (sendAddress.contains(keyWords)
+								|| sendAddress.contains(assistKeyWords)) {//把下单时 客户输入的地址 跟分区的关键字 作模糊比较 contains 是包含的意思
+							//A contains B 判断 A是否包含B 返回 boolean 类型的值
+							//如果包含,那就是这个分区了
+							FixedArea fixedArea2 = subArea.getFixedArea();//找到分区后,取出该分区关联的定区
+							if (fixedArea2!=null) {
+								//查出快递员
+								Set<Courier> couriers = fixedArea2.getCouriers();
+								if (!couriers.isEmpty()) {
+									//实际逻辑 需要根据快递员的上班时间，/收派能力/闲忙程度 来指定快递员
+									//我们直接使用第一个（假设）
+									Iterator<Courier> iterator = couriers.iterator();//调用迭代器
+									Courier courier = iterator.next();//从迭代器 拿到第一个
+									
+									//指派快递员
+									order.setCourier(courier);
+									
+									//生成工单
+									WorkBill workBill = new WorkBill();
+									workBill.setAttachbilltimes(0);
+									workBill.setBuildtime(new Date());
+									workBill.setCourier(courier);
+									workBill.setOrder(order);
+									workBill.setPickstate("新单");
+									workBill.setRemark(order.getRemark());
+									workBill.setSmsNumber("111");
+									workBill.setType("新");
+									
+									//保存工单
+									workBillRepository.save(workBill);
+									//发送信息 推送给快递员
+									//分单匹配完毕,中断代码的执行
+									order.setOrderType("自动分单");
+									return;
+								}
+							}
+						}
+					}
+				}
 			}
 			
 			
-			
-			
-			
-		}else{
+		}
 			//客户没有填写地址
 			//人工分单
-		}
-		
-		
+		order.setOrderType("人工分单");
 	}
 
 }
