@@ -20,5 +20,7 @@ public interface AreaRepository extends JpaRepository<Area, Long>{
 			+ "or shortcode like ?1  ")
 	List<Area> findByQ(String q);
 
+	Area findByProvinceAndCityAndDistrict(String province, String city, String district);
+
 }
   

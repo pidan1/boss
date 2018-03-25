@@ -40,6 +40,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>{
 	//用于登录
 	Customer findByTelephoneAndPassword(String telephone, String password);
 
+	//根据地址查询定区id
+	@Query("select fixedAreaId from Customer where address = ?")
+	String findFixedAreaIdByAdddress(String address);
+
 	
 	
 }
