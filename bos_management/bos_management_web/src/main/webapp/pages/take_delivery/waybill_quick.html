@@ -151,8 +151,16 @@
 					columns : columns,
 					onDblClickRow : doDblClickRow,
 					onAfterEdit : function(rowIndex, rowData, changes){
-						console.info(rowData);
-						editIndex = undefined;
+					//请求后台	保存运单的数据
+					$.post("../../waybillAction_save.action",rowData,
+							function(data){
+						if(data =='0'){
+							
+							$.messager.alert("提示", "数据录入失败,请检查您的数据", "info")
+						}
+						
+					})
+					
 					}
 				});
 			});
