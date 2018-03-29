@@ -56,6 +56,10 @@ public class UserAction extends CommomAction<User>{
 			
 			//主体,代表当前用户
 			Subject subject = SecurityUtils.getSubject();
+			//使用代码校验权限,不推荐使用,
+			//subject.checkPermission("");
+			
+			
 			//创建令牌
 			AuthenticationToken token=new UsernamePasswordToken(getModel().getUsername(), getModel().getPassword());
 			//执行登录

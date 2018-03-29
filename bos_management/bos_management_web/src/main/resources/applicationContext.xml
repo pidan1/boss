@@ -69,8 +69,26 @@
 	-->
 	<context:component-scan base-package="com.itheima.bos.service,com.itheima.bos.web" />
 
-	<!-- 开启事务注解 -->
-	<tx:annotation-driven transaction-manager="transactionManager" />
+	<!-- 开启事务注解 
+	JDK代理方式:根据目标对象所实现的接口,创建了一个代理对象
+	CGLib 代理方式: 创建一个目标对象的子类
+	
+	proxy-target-class="true" :使用cglib代理
+	proxy-target-class="false" :使用jdk代理
+	
+	-->
+	<tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager" />
+	<!-- 基于Spring 的自动代理,创建Service层的实现 -->
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
+	<!-- 开启cglib代理 -->
+	<property name="proxyTargetClass" value="true"></property>
+	</bean>
+	
+	<!-- 配置切面 =切点(向哪里插入代码)+通知(要插入的代码) -->
+	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+	<!-- 注入安全管理器 -->
+	<property name="securityManager" ref="securityManager"></property>
+	</bean>
 	<!--
 		#########################################################
 		指定Spring Data JPA要进行扫描的包,该包中的类框架会自动为其创建代理
@@ -120,14 +138,14 @@
 		拦截的规则执行的时候是从上往下执行的,一旦有一个规则匹配成功,后面的规则就不再执行了
 		拦截的规则不可以拆行-->
 		<value>
-		/css/*=anon
-		/data/*=anon
-		/images/*=anon
-		/js/**=anon
-		/validatecode.jsp*=anon
-		/userAction_login.action=anon
-		/courierAction_pageQuery.action = perms["courierAction_pageQuery"]
-		/hi.html = perms["courierAction_pageQuery"]
+			/css/* = anon
+				/data/* = anon
+				/images/* = anon
+				/js/** = anon
+				/validatecode.jsp = anon
+				/userAction_login.action = anon
+				/courierAction_pageQuery.action = perms["courierAction_pageQuery"]
+				/hi.html = perms["courierAction_pageQuery"]
 		
 		/**=authc
 		
