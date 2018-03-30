@@ -1,0 +1,25 @@
+package com.itheima.bos.service.system;
+
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import com.itheima.bos.domain.system.Menu;
+
+/**  
+ * ClassName:MenuService <br/>  
+ * Function:  <br/>  
+ * Date:     2018年3月30日 上午11:31:51 <br/>       
+ */
+public interface MenuService {
+
+	List<Menu> findLevelOne();
+
+	void save(Menu menu);
+
+	Page<Menu> findAll(Pageable pageable);
+
+
+}
+  

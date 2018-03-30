@@ -147,7 +147,7 @@
 				/courierAction_pageQuery.action = perms["courierAction_pageQuery"]
 				/hi.html = perms["courierAction_pageQuery"]
 		
-		/**=authc
+		<!-- /**=authc -->
 		
 		</value>
 		

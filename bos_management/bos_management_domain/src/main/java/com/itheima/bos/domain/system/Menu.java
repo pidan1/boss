@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -35,12 +36,22 @@ public class Menu {
     @ManyToMany(mappedBy = "menus")
     private Set<Role> roles = new HashSet<Role>(0);
 
-    @OneToMany(mappedBy = "parentMenu")
-    private Set<Menu> childrenMenus = new HashSet<Menu>();
+    @OneToMany(mappedBy = "parentMenu",fetch=FetchType.EAGER)
+    private Set<Menu> childrenMenus = new HashSet<Menu>();//子菜单
 
     @ManyToOne
     @JoinColumn(name = "C_PID")
-    private Menu parentMenu;
+    private Menu parentMenu;//父菜单
+    
+    
+    //添加两个方法 返回 combotree 需要的 两个字段
+    public String getText() {
+		return name;
+	}
+    public Set<Menu> getChildren() {
+		return childrenMenus;
+	}
+    
 
     public Long getId() {
         return id;

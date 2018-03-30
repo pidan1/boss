@@ -35,7 +35,7 @@
 				};
 				
 				$.ajax({
-					url : '../../data/menu.json',
+					url : '../../menuAction_findLevelOne.action',
 					type : 'POST',
 					dataType : 'text',
 					success : function(data) {
@@ -51,7 +51,25 @@
 				
 				// 点击保存
 				$('#save').click(function(){
-					location.href='role.html';
+					//校验表单
+					if ($("#roleForm").form("validate")){
+						
+						var treeObj = $.fn.zTree.getZTreeObj("menuTree");
+						// true:获取被勾选的节点组成的集合
+						// false :获取未被勾选的节点组成的集合
+						var nodes = treeObj.getChangeCheckedNodes(true);
+						// 拼接菜单的ID组成的字符串
+						var arr=new Array();
+						for (var i = 0; i < nodes.length; i++) {
+							 arr.push(nodes[i].id);
+						}
+						// 为隐藏域赋值,提交选中的菜单式id
+						var ids=arr.toString();
+						$("#menuIds").val(ids);
+						
+						// 提交表单
+						$("#roleForm").submit();
+					}
 				});
 			});
 		</script>
@@ -64,7 +82,9 @@
 			</div>
 		</div>
 		<div region="center" style="overflow:auto;padding:5px;" border="false">
-			<form id="roleForm" method="post">
+			<form id="roleForm" method="post" action="../../roleAction_save.action">
+			
+			<input type="hidden" id="menuIds" name="menuIds">
 				<table class="table-edit" width="80%" align="center">
 					<tr class="title">
 						<td colspan="2">角色信息</td>
@@ -89,10 +109,7 @@
 					</tr>
 					<tr>
 						<td>权限选择</td>
-						<td>
-							<input type="checkbox" name="permissionIds" value="1" /> 添加快递员 
-							<input type="checkbox" name="permissionIds" value="2" /> 快递员列表查询
-							<input type="checkbox" name="permissionIds" value="3" /> 添加区域 
+						<td id="permissonTd">
 						</td>
 					</tr>
 					<tr>
@@ -104,6 +121,23 @@
 				</table>
 			</form>
 		</div>
+		<script type="text/javascript">
+		$(function(){
+			$(function() {
+				$.post("../../permissionAction_findAll.action",
+								function(data) {
+									for (var i = 0; i < data.length; i++) {
+										var id = data[i].id;
+										var name = data[i].name;
+										$("#permissonTd").append(
+														'<input id="'+id+'" type="checkbox" name="permissionIds" value="'+id+'" /><label for="'+id+'">'
+																+ name + '</label>')
+									}
+								})
+			})
+		})
+		
+		</script>
 	</body>
 
 </html>
