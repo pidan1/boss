@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 
 import com.itheima.bos.domain.base.Standard;
 import com.itheima.bos.domain.system.Menu;
+import com.itheima.bos.domain.system.User;
 import com.itheima.bos.service.system.MenuService;
 import com.itheima.bos.web.action.CommomAction;
 
@@ -87,8 +88,18 @@ public class MenuAction extends CommomAction<Menu>{
 		
 		return NONE;
 	}
-	
-	
-	
+	//menuAction_findbyUser
+	@Action(value="menuAction_findbyUser")
+	public String findbyUser() throws IOException{
+		//获取当前用户
+		Subject subject = SecurityUtils.getSubject();
+		User user = (User) subject.getPrincipal();
+		
+		List<Menu> list =	menuService.findbyUser(user);
+		JsonConfig jsonConfig = new JsonConfig();
+		jsonConfig.setExcludes(new String[]{"roles","childrenMenus","parentMenu","children"});
+		list2json(list, jsonConfig);
+		return NONE;
+	}
 }
   

@@ -28,6 +28,11 @@
 			function doDelete(){
 				alert("删除...");
 			}
+			function doExportExcel(){
+				//导出Excel
+				//发送一个请求,查询数据,拼成文件
+				window.location.href="../../areaAction_exportExcel.action"
+			}
 			
 			//工具栏
 			var toolbar = [ {
@@ -49,6 +54,11 @@
 				id : 'button-import',
 				text : '导入',
 				iconCls : 'icon-redo'
+			}, {
+				id : 'button-import',
+				text : '导出Excel',
+				iconCls : 'icon-redo',
+				handler : doExportExcel
 			}];
 			// 定义列
 			var columns = [ [ {

@@ -1,5 +1,6 @@
 package com.itheima.bos.domain.system;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,7 +20,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "T_MENU")
-public class Menu {
+public class Menu implements Serializable{
     @Id
     @GeneratedValue
     @Column(name = "C_ID")
@@ -35,13 +36,22 @@ public class Menu {
 
     @ManyToMany(mappedBy = "menus")
     private Set<Role> roles = new HashSet<Role>(0);
-
+    	//fetch=FetchType.EAGER:立刻查询
     @OneToMany(mappedBy = "parentMenu",fetch=FetchType.EAGER)
     private Set<Menu> childrenMenus = new HashSet<Menu>();//子菜单
 
     @ManyToOne
     @JoinColumn(name = "C_PID")
     private Menu parentMenu;//父菜单
+    
+    //返回简单json的数据,简单的json需要pId属性,在Menu实体中增加方法
+    public Long getpId() {
+    	//一级菜单
+    	if (parentMenu==null) {
+    		return 0L;
+		}
+		return parentMenu.getId();
+	}
     
     
     //添加两个方法 返回 combotree 需要的 两个字段
